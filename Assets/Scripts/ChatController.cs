@@ -2,16 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
-using UnityEngine.Networking;
+using LLMUnity;  // Import LLM for Unity
 
 public class ChatController : MonoBehaviour
 {
     public GameObject chatPanel;  
     public GameObject textObject; 
     public TMP_InputField chatInput;  
-    List<Message> messageList = new List<Message>();
+    public LLMCharacter llmCharacter;  // Reference to LLMCharacter for AI replies
+    //public Canvas chatCanvas;  // Reference to the Canvas
 
-    private string ollamaUrl = "http://localhost:11434/api/ask";  // Adjust if necessary
+
+    List<Message> messageList = new List<Message>();
 
     void Update()
     {
@@ -20,8 +22,11 @@ public class ChatController : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Return))
             {
                 SendMessageToChat("Me: " + chatInput.text);
-                StartCoroutine(GetAvatarResponse(chatInput.text));  // Call the Ollama API here
+                string userMessage = chatInput.text;
                 chatInput.text = "";
+                
+                // Use LLMCharacter to handle chatbot response instead of Ollama
+                _ = llmCharacter.Chat(userMessage, HandleReply, ReplyCompleted);
             }
         }
         else
@@ -33,6 +38,7 @@ public class ChatController : MonoBehaviour
         }
     }
 
+    // Method to add the player's message to the chat
     public void SendMessageToChat(string text)
     {
         Message newMessage = new Message();
@@ -49,48 +55,20 @@ public class ChatController : MonoBehaviour
         Canvas.ForceUpdateCanvases();
     }
 
-    // Coroutine to send a message to Ollama and get a response
-    IEnumerator GetAvatarResponse(string userMessage)
+    // Function to handle the AI's reply
+    void HandleReply(string reply)
     {
-        // Setup the request payload
-        var requestData = new { model = "llama2", prompt = userMessage };
-        string jsonData = JsonUtility.ToJson(requestData);
+        SendMessageToChat("Avatar: " + reply);
+    }
 
-        using (UnityWebRequest request = new UnityWebRequest(ollamaUrl, "POST"))
-        {
-            byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonData);
-            request.uploadHandler = new UploadHandlerRaw(bodyRaw);
-            request.downloadHandler = new DownloadHandlerBuffer();
-            request.SetRequestHeader("Content-Type", "application/json");
-
-            // Send the request and wait for a response
-            yield return request.SendWebRequest();
-
-            if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
-            {
-                Debug.LogError("Error: " + request.error);
-                SendMessageToChat("Avatar: Sorry, something went wrong.");
-            }
-            else
-            {
-                // Parse the response
-                string jsonResponse = request.downloadHandler.text;
-                OllamaResponse response = JsonUtility.FromJson<OllamaResponse>(jsonResponse);
-
-                // Display the avatar's response in chat
-                SendMessageToChat("Avatar: " + response.response);
-            }
-        }
+    // Optional: Called when the AI has completed its response
+    void ReplyCompleted()
+    {
+        Debug.Log("The AI has finished responding.");
     }
 }
 
-// Class to hold Ollama's response
-[System.Serializable]
-public class OllamaResponse
-{
-    public string response;
-}
-
+// Class to represent chat messages
 [System.Serializable]
 public class Message
 {

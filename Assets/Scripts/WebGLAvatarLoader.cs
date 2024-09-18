@@ -11,6 +11,7 @@ namespace ReadyPlayerMe.Samples.WebGLSample
         private GameObject avatar;
         private string avatarUrl = "";
         private WebFrameHandler webFrameHandler;
+        public GameObject chatManager;  // Reference to ChatController
 
 
         private void Start()
@@ -29,6 +30,8 @@ namespace ReadyPlayerMe.Samples.WebGLSample
             {
                 avatar.transform.position = new Vector3(0, 1, 0);
             }
+            ActivateChatbox();
+
         }
 
         private void OnAvatarLoadFailed(object sender, FailureEventArgs args)
@@ -58,6 +61,19 @@ namespace ReadyPlayerMe.Samples.WebGLSample
             avatarLoader.OnCompleted += OnAvatarLoadCompleted;
             avatarLoader.OnFailed += OnAvatarLoadFailed;
             avatarLoader.LoadAvatar(avatarUrl);
+        }
+        
+        private void ActivateChatbox()
+        {
+            // Check if chatManager is assigned
+            if (chatManager != null)
+            {
+                ChatVisibility chatVisibility = chatManager.GetComponent<ChatVisibility>();
+                if (chatVisibility != null)
+                {
+                    chatVisibility.ShowChatbox();  // Call method to activate chatbox
+                }
+            }
         }
     }
 }

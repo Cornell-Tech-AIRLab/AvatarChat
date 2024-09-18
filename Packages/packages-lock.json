@@ -1,5 +1,12 @@
 {
   "dependencies": {
+    "ai.undream.llm": {
+      "version": "git@github.com:undreamai/LLMUnity.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "9081e36cd810f86bc6444e49ba3b123ff69c5242"
+    },
     "com.readyplayerme.core": {
       "version": "https://github.com/readyplayerme/rpm-unity-sdk-core.git",
       "depth": 0,
