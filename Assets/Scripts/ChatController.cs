@@ -1,62 +1,99 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using TMPro;  // Make sure to include the TextMeshPro namespace
+using TMPro;
+using UnityEngine.Networking;
 
 public class ChatController : MonoBehaviour
 {
-    public GameObject chatBox;  // The chatbox GameObject (chat UI)
-    public GameObject textObject;  // Prefab for displaying chat messages
-    public TMP_InputField chatInput;  // TMP input field for user input
+    public GameObject chatPanel;  
+    public GameObject textObject; 
+    public TMP_InputField chatInput;  
+    List<Message> messageList = new List<Message>();
 
-    void Start()
-    {
-        // Hide chatbox initially
-        chatBox.SetActive(false);
-    }
+    private string ollamaUrl = "http://localhost:11434/api/ask";  // Adjust if necessary
 
-    // Called when user presses enter to send a chat message
-    public void OnChatInputSubmit()
+    void Update()
     {
-        if (!string.IsNullOrEmpty(chatInput.text))
+        if (chatInput.text != "")
         {
-            string userMessage = chatInput.text;
-            
-            // Clear the input field after sending the message
-            chatInput.text = "";  
-
-            // Display user message in the chatbox
-            AddMessageToChat("Me: " + userMessage);
-
-            // Simulate avatar response (replace this with an API or LLM call)
-            Invoke("DisplayAvatarResponse", 0.5f);  // Simulate a small delay
+            if (Input.GetKeyDown(KeyCode.Return))
+            {
+                SendMessageToChat("Me: " + chatInput.text);
+                StartCoroutine(GetAvatarResponse(chatInput.text));  // Call the Ollama API here
+                chatInput.text = "";
+            }
+        }
+        else
+        {
+            if (!chatInput.isFocused && Input.GetKeyDown(KeyCode.Return))
+            {
+                chatInput.ActivateInputField();
+            }
         }
     }
 
-    // Function to add a new message to the chatbox
-    private void AddMessageToChat(string message)
+    public void SendMessageToChat(string text)
     {
-        // Instantiate the textObject prefab under the Content in the ScrollView
-        GameObject newTextObject = Instantiate(textObject, chatBox.transform);
-        TMP_Text textComponent = newTextObject.GetComponent<TMP_Text>();
+        Message newMessage = new Message();
+        newMessage.text = text;
 
-        if (textComponent != null)
+        GameObject newText = Instantiate(textObject, chatPanel.transform);
+        newMessage.textObject = newText.GetComponent<TMP_Text>();
+
+        newMessage.textObject.text = newMessage.text;
+
+        messageList.Add(newMessage);
+
+        // Scroll to bottom after adding a new message
+        Canvas.ForceUpdateCanvases();
+    }
+
+    // Coroutine to send a message to Ollama and get a response
+    IEnumerator GetAvatarResponse(string userMessage)
+    {
+        // Setup the request payload
+        var requestData = new { model = "llama2", prompt = userMessage };
+        string jsonData = JsonUtility.ToJson(requestData);
+
+        using (UnityWebRequest request = new UnityWebRequest(ollamaUrl, "POST"))
         {
-            textComponent.text = message;  // Set the text to display the message
+            byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonData);
+            request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+            request.downloadHandler = new DownloadHandlerBuffer();
+            request.SetRequestHeader("Content-Type", "application/json");
+
+            // Send the request and wait for a response
+            yield return request.SendWebRequest();
+
+            if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
+            {
+                Debug.LogError("Error: " + request.error);
+                SendMessageToChat("Avatar: Sorry, something went wrong.");
+            }
+            else
+            {
+                // Parse the response
+                string jsonResponse = request.downloadHandler.text;
+                OllamaResponse response = JsonUtility.FromJson<OllamaResponse>(jsonResponse);
+
+                // Display the avatar's response in chat
+                SendMessageToChat("Avatar: " + response.response);
+            }
         }
-
     }
+}
 
-    // Function to simulate and display the avatar's response in the chat
-    private void DisplayAvatarResponse()
-    {
-        string avatarResponse = "Simulated avatar response";  // Replace with actual logic
-        AddMessageToChat("Avatar: " + avatarResponse);
-    }
+// Class to hold Ollama's response
+[System.Serializable]
+public class OllamaResponse
+{
+    public string response;
+}
 
-    // Call this method after avatar creation to display the chatbox
-    public void ShowChatbox()
-    {
-        chatBox.SetActive(true);  // Show chatbox panel
-    }
+[System.Serializable]
+public class Message
+{
+    public string text;
+    public TMP_Text textObject;
 }
