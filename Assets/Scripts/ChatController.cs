@@ -2,15 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
-using LLMUnity;  // Import LLM for Unity
+//using LLMUnity;  // Import LLM for Unity
 
 public class ChatController : MonoBehaviour
 {
     public GameObject chatPanel;  
     public GameObject textObject; 
     public TMP_InputField chatInput;  
-    public LLMCharacter llmCharacter;  // Reference to LLMCharacter for AI replies
-    //public Canvas chatCanvas;  // Reference to the Canvas
+    //public LLMCharacter llmCharacter;  // Reference to LLMCharacter for AI replies
 
 
     List<Message> messageList = new List<Message>();
@@ -26,7 +25,7 @@ public class ChatController : MonoBehaviour
                 chatInput.text = "";
                 
                 // Use LLMCharacter to handle chatbot response instead of Ollama
-                _ = llmCharacter.Chat(userMessage, HandleReply, ReplyCompleted);
+                //_ = llmCharacter.Chat(userMessage, HandleReply, ReplyCompleted);
             }
         }
         else

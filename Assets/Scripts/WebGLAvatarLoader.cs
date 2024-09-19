@@ -1,5 +1,6 @@
 using ReadyPlayerMe.Core;
 using UnityEngine;
+using UnityEngine.UI;
 using BodyType = ReadyPlayerMe.Core.BodyType;
 
 namespace ReadyPlayerMe.Samples.WebGLSample
@@ -8,10 +9,11 @@ namespace ReadyPlayerMe.Samples.WebGLSample
     public class WebGLAvatarLoader : MonoBehaviour
     {
         private const string TAG = nameof(WebGLAvatarLoader);
-        private GameObject avatar;
+        public GameObject avatar;
         private string avatarUrl = "";
         private WebFrameHandler webFrameHandler;
-        public GameObject chatManager;  // Reference to ChatController
+        public GameObject animationC;
+        public GameObject buttonC;
 
 
         private void Start()
@@ -30,7 +32,7 @@ namespace ReadyPlayerMe.Samples.WebGLSample
             {
                 avatar.transform.position = new Vector3(0, 1, 0);
             }
-            ActivateChatbox();
+            buttonC.SetActive(true);
 
         }
 
@@ -62,18 +64,24 @@ namespace ReadyPlayerMe.Samples.WebGLSample
             avatarLoader.OnFailed += OnAvatarLoadFailed;
             avatarLoader.LoadAvatar(avatarUrl);
         }
-        
-        private void ActivateChatbox()
+       public void ApplyAnimations()
+{
+    if (avatar != null)
+    {
+        AnimationController animationController = FindObjectOfType<AnimationController>();
+        if (animationController != null)
         {
-            // Check if chatManager is assigned
-            if (chatManager != null)
-            {
-                ChatVisibility chatVisibility = chatManager.GetComponent<ChatVisibility>();
-                if (chatVisibility != null)
-                {
-                    chatVisibility.ShowChatbox();  // Call method to activate chatbox
-                }
-            }
+            animationController.SetAvatar(avatar);
         }
+        else
+        {
+            Debug.LogError("AnimationController not found!");
+        }
+    }
+    else
+    {
+        Debug.LogError("Avatar is null!");
+    }
+}
     }
 }

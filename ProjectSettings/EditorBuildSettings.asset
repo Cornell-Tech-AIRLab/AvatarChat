@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Samples/Ready Player Me Core/7.2.0/WebGLSample/Scenes/WebGLExample.unity
+    path: Assets/Scenes/Main.unity
     guid: cf86529bd5cc64ced94938fb51c1f4ab
   m_configObjects: {}

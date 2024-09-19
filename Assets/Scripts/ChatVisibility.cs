@@ -2,11 +2,10 @@ using UnityEngine;
 
 public class ChatVisibility : MonoBehaviour
 {
-    public Canvas chatCanvas;  // Reference to the Canvas
+    public Canvas chatCanvas;
 
     private void Start()
     {
-        // Initially, ensure the chatbox is hidden
         chatCanvas.gameObject.SetActive(false);
     }
 
