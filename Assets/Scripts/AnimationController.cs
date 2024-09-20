@@ -12,11 +12,9 @@ public class AnimationController : MonoBehaviour
 
     public void SetAvatar(GameObject avatar) {
         animateEyes = avatar.GetComponentInChildren<EyeAnimationHandler>();
-        Debug.Log("Avatar has been set: " + avatar.name);
-        if (animateEyes != null) {
-            animateEyes.enabled = true;
-        }
-        LipsAnimation(avatar);
+        animateEyes.enabled = true;
+  
+        //LipsAnimation(avatar);
     }
  public void LipsAnimation(GameObject a) 
 {
