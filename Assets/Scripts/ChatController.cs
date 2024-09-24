@@ -1,15 +1,12 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
-//using LLMUnity;  // Import LLM for Unity
 
 public class ChatController : MonoBehaviour
 {
     public GameObject chatPanel;  
     public GameObject textObject; 
-    public TMP_InputField chatInput;  
-    //public LLMCharacter llmCharacter;  // Reference to LLMCharacter for AI replies
+    public TMP_InputField chatInput;
 
 
     List<Message> messageList = new List<Message>();
@@ -23,9 +20,7 @@ public class ChatController : MonoBehaviour
                 SendMessageToChat("Me: " + chatInput.text);
                 string userMessage = chatInput.text;
                 chatInput.text = "";
-                
-                // Use LLMCharacter to handle chatbot response instead of Ollama
-                //_ = llmCharacter.Chat(userMessage, HandleReply, ReplyCompleted);
+                  
             }
         }
         else
@@ -50,24 +45,17 @@ public class ChatController : MonoBehaviour
 
         messageList.Add(newMessage);
 
-        // Scroll to bottom after adding a new message
         Canvas.ForceUpdateCanvases();
     }
 
     // Function to handle the AI's reply
-    void HandleReply(string reply)
-    {
-        SendMessageToChat("Avatar: " + reply);
-    }
-
-    // Optional: Called when the AI has completed its response
-    void ReplyCompleted()
-    {
-        Debug.Log("The AI has finished responding.");
-    }
+    // void HandleReply(string reply)
+    // {
+    //     Debug.Log("LLM reply works");
+    //     SendMessageToChat("Avatar: " + reply);
+    // }
 }
 
-// Class to represent chat messages
 [System.Serializable]
 public class Message
 {

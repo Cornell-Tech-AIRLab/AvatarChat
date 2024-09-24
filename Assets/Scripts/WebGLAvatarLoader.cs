@@ -1,6 +1,6 @@
 using ReadyPlayerMe.Core;
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.Audio;
 using BodyType = ReadyPlayerMe.Core.BodyType;
 
 namespace ReadyPlayerMe.Samples.WebGLSample
@@ -9,11 +9,12 @@ namespace ReadyPlayerMe.Samples.WebGLSample
     public class WebGLAvatarLoader : MonoBehaviour
     {
         private const string TAG = nameof(WebGLAvatarLoader);
-        public GameObject avatar;
+        private GameObject avatar;
         private string avatarUrl = "";
         private WebFrameHandler webFrameHandler;
-        public GameObject animationC;
+        //public GameObject animationC;
         public GameObject buttonC;
+        public GameObject audioGameobject;
 
 
         private void Start()
@@ -33,7 +34,10 @@ namespace ReadyPlayerMe.Samples.WebGLSample
                 avatar.transform.position = new Vector3(0, 1, 0);
             }
             buttonC.SetActive(true);
-
+            avatar.AddComponent<EyeAnimationHandler>();
+            VoiceHandler voiceHandler = avatar.AddComponent<VoiceHandler>();
+            voiceHandler.PlayAudioClip(audioGameobject.GetComponent<VoiceHandler>().AudioClip);
+        
         }
 
         private void OnAvatarLoadFailed(object sender, FailureEventArgs args)
@@ -64,24 +68,24 @@ namespace ReadyPlayerMe.Samples.WebGLSample
             avatarLoader.OnFailed += OnAvatarLoadFailed;
             avatarLoader.LoadAvatar(avatarUrl);
         }
-       public void ApplyAnimations()
-{
-    if (avatar != null)
-    {
-        AnimationController animationController = FindObjectOfType<AnimationController>();
-        if (animationController != null)
-        {
-            animationController.SetAvatar(avatar);
-        }
-        else
-        {
-            Debug.LogError("AnimationController not found!");
-        }
-    }
-    else
-    {
-        Debug.LogError("Avatar is null!");
-    }
-}
+//        public void ApplyAnimations()
+// {
+//     if (avatar != null)
+//     {
+//         AnimationController animationController = FindObjectOfType<AnimationController>();
+//         if (animationController != null)
+//         {
+//             animationController.SetAvatar(avatar);
+//         }
+//         else
+//         {
+//             Debug.LogError("AnimationController not found!");
+//         }
+//     }
+//     else
+//     {
+//         Debug.LogError("Avatar is null!");
+//     }
+// }
     }
 }
