@@ -62,7 +62,7 @@ public class ChatController : MonoBehaviour
             model = "llama3.2",
             messages = new ApiMessage[]
             {
-                new ApiMessage { role = "system", content = "you are a salty pirate" },
+                new ApiMessage { role = "system", content = "you are a listener and here to engage people in positive self-talk and regulating emotionsS" },
                 new ApiMessage { role = "user", content = userContent }
             },
             stream = false
